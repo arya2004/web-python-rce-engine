@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pyodide Example</title>
+</head>
+<body>
+    <h1>Run Python Code with Pyodide</h1>
+    <textarea id="pythonCode" rows="10" cols="50">
+print("Hello, world!")
+x = 5
+y = 10
+z = x + y
+print("The sum of x and y is:", z)
+    </textarea>
+    <br>
+    <button onclick="runPythonCode()">Run Python Code</button>
+    <h2>Output:</h2>
+    <pre id="output"></pre>
+
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

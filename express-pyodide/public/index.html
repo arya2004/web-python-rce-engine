@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pyodide Example</title>
+</head>
+<body>
+    <textarea id="pythonCode" rows="10" cols="50">
+import os 
+cwd = os.getcwd() 
+cwd
+    </textarea>
+    <br>
+    <button onclick="runPythonCode()">Run Python Code</button>
+    <h2>Output:</h2>
+    <pre id="output"></pre>
+
+    <script src="script.js"></script>
+</body>
+</html>
