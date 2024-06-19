@@ -1,12 +1,12 @@
 self.importScripts('https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js');
 
-async function loadPyodideAndPackages() {
+let pyodideReadyPromise = (async () => {
     self.pyodide = await loadPyodide();
-}
+})();
 
 self.onmessage = async function(e) {
+    await pyodideReadyPromise;  // Ensure Pyodide is loaded
     const code = e.data.code;
-    await loadPyodideAndPackages();
     try {
         let output = await self.pyodide.runPythonAsync(code);
         self.postMessage({ result: output });
