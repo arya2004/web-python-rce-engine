@@ -7,19 +7,17 @@ function initializeWorker() {
     worker.onmessage = function(e) {
         clearTimeout(timeout);
         if (e.data.result) {
-            document.getElementById("output").innerText = e.data.result;
+            displayOutput(e.data.result);
         } else if (e.data.error) {
-            document.getElementById("output").innerText = e.data.error;
+            displayOutput(e.data.error);
         }
     };
 }
 
-function runPythonCode() {
-    const code = document.getElementById("pythonCode").value;
-    
+function runPythonCode(code) {  
     timeout = setTimeout(() => {
         worker.terminate();
-        document.getElementById("output").innerText = "Error: Execution timed out.";
+        console.log("Worker terminated cause of timeout");
         // Reinitialize the worker after termination
         initializeWorker();
     }, 1000); // Set timeout to 1 second
@@ -27,7 +25,14 @@ function runPythonCode() {
     worker.postMessage({ code: code });
 }
 
+function displayOutput(output) {
+    document.getElementById("output").innerText = output;
+}
+
 // Initial worker setup
 initializeWorker();
 
-document.querySelector("button").addEventListener("click", runPythonCode);
+document.querySelector("button").addEventListener("click", () => {
+    const code = document.getElementById("pythonCode").value;
+    runPythonCode(code);
+});

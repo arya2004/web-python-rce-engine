@@ -1,0 +1,16 @@
+{
+  "name": "server-pyoduide",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@pyodide/pyodide": "^0.17.1",
+    "pyodide": "^0.26.1"
+  }
+}

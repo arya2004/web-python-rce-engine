@@ -9,8 +9,10 @@ self.onmessage = async function(e) {
     const code = e.data.code;
     try {
         let output = await self.pyodide.runPythonAsync(code);
+        console.log(output);
         self.postMessage({ result: output });
     } catch (err) {
+        console.log("Errror\n\n");
         self.postMessage({ error: err.toString() });
     }
 };
