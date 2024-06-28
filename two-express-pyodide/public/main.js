@@ -1,51 +1,63 @@
-let worker;
-
-// Creating textDecoder instance
-let decoder = new TextDecoder("utf-8");
-
-document.getElementById('runButton').addEventListener('click', () => {
-    if (worker) {
-        worker.terminate();
-    }
-    worker = new Worker('worker.js');
+document.addEventListener('DOMContentLoaded', () => {
+    const decoder = new TextDecoder("utf-8");
+    let worker;
     let byteArray = [];
-    
-    worker.onmessage = (event) => {
+
+    function initializeWorker() {
+        if (worker) {
+            worker.terminate();
+        }
+        worker = new Worker('worker.js');
+        byteArray = [];
+
+        worker.onmessage = (event) => {
+            handleWorkerMessage(event);
+        };
+    }
+
+    function handleWorkerMessage(event) {
         if (event.data.type === 'aByte') {
             byteArray.push(event.data.content);
         }
         if (event.data.type === 'final_output') {
             byteArray.push(event.data.content);
-            let byteArray2 = new Uint8Array(byteArray);
-            let str = decoder.decode(byteArray2);
-
-            // Display the output
-            console.log(str);
-            document.getElementById('output').textContent = str;
+            displayOutput();
+            initializeWorker(); // Reinitialize the worker after execution
         } else if (event.data.type === 'error') {
-            let byteArray2 = new Uint8Array(byteArray);
-            let str = decoder.decode(byteArray2);
-
-            // Display the output
-            console.log(str);
-            document.getElementById('output').textContent += str + '\nError: ' + event.data.content;
+            displayOutput();
+            document.getElementById('output').textContent += '\nError: ' + event.data.content;
+            initializeWorker(); // Reinitialize the worker after execution
         }
-    };
+    }
 
-    const code = document.getElementById('codeInput').value;
+    function displayOutput() {
+        const byteArray2 = new Uint8Array(byteArray);
+        const str = decoder.decode(byteArray2);
+        console.log(str);
+        document.getElementById('output').textContent = str;
+    }
 
-    worker.postMessage({
-        code: code,
-        indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.1/full/'
-    });
+    function runPythonCode() {
+        const code = document.getElementById('codeInput').value;
 
-    // Terminate the worker if it takes more than 6 seconds
-    setTimeout(() => {
-        if (worker) {
-            worker.terminate();
-            let byteArray2 = new Uint8Array(byteArray);
-            let str = decoder.decode(byteArray2);
-            document.getElementById('output').textContent += str + '\nWorker terminated due to timeout.';
-        }
-    }, 1000);
+        worker.postMessage({
+            code: code,
+            indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.1/full/'
+        });
+
+        // Terminate the worker if it takes more than 6 seconds
+        setTimeout(() => {
+            if (worker) {
+                worker.terminate();
+                displayOutput();
+                document.getElementById('output').textContent += '\nWorker terminated due to timeout.';
+                initializeWorker(); // Reinitialize the worker after timeout
+            }
+        }, 5000);
+    }
+
+    document.getElementById('runButton').addEventListener('click', runPythonCode);
+
+    // Initialize the worker when the script is loaded
+    initializeWorker();
 });
