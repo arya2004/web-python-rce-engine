@@ -6,6 +6,9 @@ function initializeWorker() {
     
     worker.onmessage = function(e) {
         clearTimeout(timeout);
+        
+        console.log("return val:",e.data);
+
         if (e.data.result) {
             displayOutput(e.data.result);
         } else if (e.data.error) {
@@ -17,10 +20,16 @@ function initializeWorker() {
 function runPythonCode(code) {  
     timeout = setTimeout(() => {
         worker.terminate();
-        console.log("Worker terminated cause of timeout");
+
+        if(document.getElementById("output").innerText == ""){
+            document.getElementById("output").innerText = "Time Limit Exceeded"
+        }
         // Reinitialize the worker after termination
+
         initializeWorker();
     }, 1000); // Set timeout to 1 second
+    
+    document.getElementById("output").innerText = ""
 
     worker.postMessage({ code: code });
 }

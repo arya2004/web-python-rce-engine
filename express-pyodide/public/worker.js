@@ -7,12 +7,16 @@ let pyodideReadyPromise = (async () => {
 self.onmessage = async function(e) {
     await pyodideReadyPromise;  // Ensure Pyodide is loaded
     const code = e.data.code;
+    //console.log("code: ",code);
+    let output;
+    let error;
     try {
-        let output = await self.pyodide.runPythonAsync(code);
+        output = await self.pyodide.runPythonAsync(code);
         console.log(output);
-        self.postMessage({ result: output });
+     
     } catch (err) {
         console.log("Errror\n\n");
-        self.postMessage({ error: err.toString() });
+        error = err.toString();
     }
+    self.postMessage({ result: output , error: error });
 };

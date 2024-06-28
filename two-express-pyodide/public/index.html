@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pyodide with Web Worker</title>
+</head>
+<body>
+    <h1>Pyodide with Web Worker Example</h1>
+    <textarea id="codeInput" rows="10" cols="50">import time
+
+print("Starting loop...")
+
+for i in range(20):
+    print(i)
+    time.sleep(0.5)
+
+print("Loop finished.")</textarea><br>
+    <button id="runButton">Run Python Code</button>
+    <pre id="output"></pre>
+
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.1/full/pyodide.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
