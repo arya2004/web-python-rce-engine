@@ -1,12 +1,16 @@
 let worker;
 const decoder = new TextDecoder("utf-8");
 let byteArray = [];
+let processTimeoutSeconds = 4000 
+
 
 function initializeWorker() {
     if (worker) {
         worker.terminate();
     }
     worker = new Worker('worker.js');
+    currentTime = new Date();
+    console.log( currentTime, ":Worker Initialized");
     byteArray = [];
 
     worker.onmessage = (event) => {
@@ -21,11 +25,13 @@ function handleWorkerMessage(event) {
     if (event.data.type === 'final_output') {
         byteArray.push(event.data.content);
         displayOutput();
-        initializeWorker(); // Reinitialize the worker after execution
+        console.log("final output",event.data);
+        
+        
     } else if (event.data.type === 'error') {
         displayOutput();
         document.getElementById('output').textContent += '\nError: ' + event.data.content;
-        initializeWorker(); // Reinitialize the worker after execution
+    
     }
 }
 
@@ -48,16 +54,24 @@ function runPythonCode() {
     setTimeout(() => {
         if (worker) {
             worker.terminate();
+            let currentTime = new Date();
+            console.log( currentTime, ":Worker Terminated");
             displayOutput();
+            currentTime = new Date();
+            console.log( currentTime, ":Output Displayed");
             document.getElementById('output').textContent += '\nWorker terminated due to timeout.';
             initializeWorker(); // Reinitialize the worker after timeout
+            
         }
-    }, 5000);
+    }, processTimeoutSeconds);
 }
+
+initializeWorker();
+
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('runButton').addEventListener('click', runPythonCode);
 
     // Initialize the worker when the script is loaded
-    initializeWorker();
+    //initializeWorker();
 });

@@ -23,7 +23,7 @@ self.onmessage = async (event) => {
         await pyodide.runPythonAsync(code);
     } catch (err) {
         self.postMessage({ type: 'error', content: err.toString() });
-        return;
+        
     }
 
     // Send final output (if any)
