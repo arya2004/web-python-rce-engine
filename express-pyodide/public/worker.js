@@ -1,22 +1,31 @@
-self.importScripts('https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js');
+self.onmessage = async (event) => {
+    const { code, indexURL } = event.data;
 
-let pyodideReadyPromise = (async () => {
-    self.pyodide = await loadPyodide();
-})();
+    importScripts(`${indexURL}pyodide.js`);
 
-self.onmessage = async function(e) {
-    await pyodideReadyPromise;  // Ensure Pyodide is loaded
-    const code = e.data.code;
-    //console.log("code: ",code);
-    let output;
-    let error;
+    let pyodide = await loadPyodide();
+
+    // Capture and send stdout and stderr in real-time
+    pyodide.setStdout({
+        raw: (msg) => {
+            self.postMessage({ type: 'aByte', content: msg });
+        }
+    });
+
+    pyodide.setStderr({
+        raw: (msg) => {
+            self.postMessage({ type: 'error', content: msg });
+        }
+    });
+
+    // Run the Python code in a try-catch block
     try {
-        output = await self.pyodide.runPythonAsync(code);
-        console.log(output);
-     
+        await pyodide.runPythonAsync(code);
     } catch (err) {
-        console.log("Errror\n\n");
-        error = err.toString();
+        self.postMessage({ type: 'error', content: err.toString() });
+        
     }
-    self.postMessage({ result: output , error: error });
+
+    // Send final output (if any)
+    self.postMessage({ type: 'final_output', content: 'Execution completed.' });
 };

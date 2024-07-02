@@ -3,19 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pyodide Example</title>
+    <title>Python Runner</title>
 </head>
 <body>
-    <textarea id="pythonCode" rows="10" cols="50">
-import os 
-cwd = os.getcwd() 
-cwd
-    </textarea>
-    <br>
-    <button onclick="runPythonCode()">Run Python Code</button>
-    <h2>Output:</h2>
-    <pre id="output"></pre>
+    <h1>Python Code Runner</h1>
+    
+    <textarea id="codeInput" rows="10" cols="50" placeholder="Enter Python code here..."></textarea><br>
+    <button id="runButton">Run Python Code</button><br>
+    <div id="output" style="white-space: pre-wrap;"></div>
 
-    <script src="script.js"></script>
+    <script>
+        // Function to initialize the worker
+        function initialize() {
+            if (window.MyPythonRunner) {
+                window.MyPythonRunner.initializeWorker();
+                console.log("Worker has been initialized by jslib.");
+            } else {
+                console.error("MyPythonRunner is not available.");
+            }
+        }
+
+        // Function to run Python code
+        function runCode(code) {
+            if (window.MyPythonRunner) {
+                window.MyPythonRunner.runPythonCode(code);
+                console.log("Python code execution started by jslib.");
+            } else {
+                console.error("MyPythonRunner is not available.");
+            }
+        }
+
+        // Attach event listener to the runButton
+        document.getElementById('runButton').addEventListener('click', function() {
+            var pythonCode = document.getElementById('codeInput').value;
+            runCode(pythonCode);
+        });
+
+        // This script assumes that MyPythonRunner has been included earlier
+        // It could be included via a script tag or through a separate .jslib file
+
+        // Sample inclusion (assuming MyPythonRunner is already defined)
+        // <script src="path/to/your/file.jslib"></script>
+    </script>
+
+    <!-- Replace this with your actual path to MyPythonRunner.jslib -->
+    <script src="/express-pyodide/public/MyPythonRunner.jslib"></script>
+
 </body>
 </html>
